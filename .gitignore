@@ -1,0 +1,10 @@
+**__pycache__**
+venv
+myenv
+.env
+*.pytest_cache
+.coverage
+**.sqlite3**
+.secrets.**
+app.sqlite
+test.sqlite
