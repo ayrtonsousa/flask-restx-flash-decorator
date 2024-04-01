@@ -19,12 +19,12 @@ def create_user_admin(name, email, password):
     }
     errors = UserSchema().validate(data)
     if errors:
-        raise ValueError(errors)
-
-    user = UserModel.create_user(data)
-    user.is_admin = True
-    db.session.commit()
-    click.echo("User admin created")
+        print(errors)
+    else:
+        user = UserModel.create_user(data)
+        user.is_admin = True
+        db.session.commit()
+        click.echo("User admin created")
 
 def init_app(app):
     app.cli.add_command(create_user_admin)

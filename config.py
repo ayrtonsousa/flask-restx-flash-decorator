@@ -19,7 +19,7 @@ class ConfigBase:
 class Config(ConfigBase):
     DEBUG = os.getenv('DEBUG').lower() == "true"
     SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.sqlite')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     RATELIMIT_STORAGE_URI = os.getenv('RATELIMIT_STORAGE_URI')
     CACHE_TYPE = os.getenv('CACHE_TYPE')

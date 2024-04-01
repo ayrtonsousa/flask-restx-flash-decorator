@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - flask db upgrade
+      - flask create-user-admin test test@test.com test
+      - python3 fixture_app_roles.py
+      #- python3 -m pytest
+artifacts:
+  files: '**/*'

@@ -5,7 +5,7 @@ from app.api.models.user import UserModel
 from app.extensions import limiter
 
 
-auth_ns = Namespace('auth', description='Auth operations')
+auth_ns = Namespace('auth', description='Auth related operations')
 
 item = auth_ns.model('login', {
     'email': fields.String(description='email'),
