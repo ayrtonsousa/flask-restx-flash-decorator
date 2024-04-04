@@ -280,7 +280,7 @@ class HistoricHitsModel(db.Model):
     def get_historic_by_user_top10_words_error(cls, id_user):
         results = db.session.query(
             WordModel.name.label('word'),
-            func.count(cls.hit).label('count')
+            func.count().label('count')
         ).join(
             cls,
             WordModel.id == cls.id_word
@@ -289,9 +289,9 @@ class HistoricHitsModel(db.Model):
             cls.hit == False,
             cls.date <= cls.yesterday
         ).group_by(
-            cls.id_word
+            WordModel.name
         ).order_by(
-            func.count(cls.hit).desc()
+            func.count().desc()
         ).limit(10).all()
 
         return results
