@@ -8,7 +8,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 
 
-cache = Cache()
+cache = Cache(config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': '/tmp'})
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()

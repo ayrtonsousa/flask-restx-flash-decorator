@@ -208,9 +208,8 @@ class SetModel(db.Model):
 class HistoricHitsModel(db.Model):
     __tablename__ = "history_hits"
     today = datetime.utcnow().date()
-    thirty_days_ago = today - timedelta(days=30)
     yesterday = today - timedelta(days=1)
-    current_day = datetime.utcnow().day
+    thirty_days_ago = yesterday - timedelta(days=30)
     start_date_90days = yesterday - timedelta(days=90)
 
     id = db.Column(db.Integer(), primary_key=True)
