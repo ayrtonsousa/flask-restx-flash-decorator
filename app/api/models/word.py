@@ -1,20 +1,21 @@
 from datetime import datetime, timedelta
-from sqlalchemy import func, case, extract
 from collections import defaultdict
+
+from sqlalchemy import func, case, extract
 
 from app.extensions import db
 
 
 tags_words = db.Table('tags_words',
-            db.Column(
-                'word_id', db.Integer(),
-                db.ForeignKey('words.id', ondelete="CASCADE")
-            ),
-            db.Column(
-                'tag_id',
-                db.Integer(),
-                db.ForeignKey('tags.id', ondelete="CASCADE")
-            )
+    db.Column(
+        'word_id', db.Integer(),
+        db.ForeignKey('words.id', ondelete="CASCADE")
+    ),
+    db.Column(
+        'tag_id',
+        db.Integer(),
+        db.ForeignKey('tags.id', ondelete="CASCADE")
+    )
 )
 
 
@@ -57,7 +58,6 @@ class WordModel(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     translation = db.Column(db.String(80), nullable=False)
     annotation = db.Column(db.Text)
-
     tags = db.relationship('TagModel',
         secondary=tags_words,
         backref=db.backref('words', lazy='dynamic')
@@ -311,7 +311,8 @@ class HistoricHitsModel(db.Model):
                 cls.date >= cls.start_date_90days,
                 cls.date <= cls.yesterday
             )
-            .group_by(cls.date,cls.hit).order_by(cls.date.asc())
+            .group_by(cls.date,cls.hit)
+            .order_by(cls.date.asc())
             .all()
             )
 

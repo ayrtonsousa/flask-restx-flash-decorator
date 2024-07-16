@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 from app.api.models.word import WordModel, TagModel, SetModel
-from app.api.schemas.word import WordSchema, TagSchema, SetWordsSchema
+from app.api.schemas.word import WordSchemaInput, WordSchemaOutPut, TagSchema, SetWordsSchema
 from app.api.utils.wrappers_auth import role_or_admin_required
 from app.extensions import limiter
 
@@ -13,8 +13,9 @@ words_ns = Namespace('words', description='Words related operations')
 tags_ns = Namespace('tags', description='Tags related operations')
 sets_words_ns = Namespace('set_words', description='Sets Words related operations')
 
-word_schema = WordSchema(exclude=('sets',))
-word_list_schema = WordSchema(many=True, exclude=('sets',))
+word_input_schema = WordSchemaInput(exclude=('sets',))
+word_output_schema = WordSchemaOutPut(exclude=('sets',))
+word_list_schema = WordSchemaOutPut(many=True, exclude=('sets',))
 
 tag_schema = TagSchema()
 tag_list_schema = TagSchema(many=True)
@@ -52,7 +53,7 @@ class Word(Resource):
         '''Get word by id'''
         word_data = WordModel.get_word_by_id(id_word)
         if word_data:
-            return word_schema.dump(word_data)
+            return word_input_schema.dump(word_data)
         return {'message': ITEM_NOT_FOUND}, 404
 
     @limiter.limit("500 per day")
@@ -64,11 +65,11 @@ class Word(Resource):
         data_word = WordModel.get_word_by_id(id_word)
         if data_word:
             data = words_ns.payload
-            errors = word_schema.validate(data)
+            errors = word_input_schema.validate(data)
             if errors:
                 raise ValidationError(errors)
             word = WordModel.update_word(id_word, data)
-            word_serialized = word_schema.dump(word)
+            word_serialized = word_output_schema.dump(word)
             return word_serialized, 200
         return {'message': ITEM_NOT_FOUND}, 404
 
@@ -88,7 +89,6 @@ class Word(Resource):
 class WordList(Resource):
 
     @jwt_required()
-    @jwt_required()
     def get(self):
         '''List all words'''
         all_words = WordModel.get_all_words()
@@ -102,12 +102,12 @@ class WordList(Resource):
     def post(self):
         '''Create a word'''
         data = words_ns.payload
-        errors = word_schema.validate(data)
+        errors = word_input_schema.validate(data)
         if errors:
            raise ValidationError(errors)
 
         word_data = WordModel.create_word(data)
-        word_serialized = word_schema.dump(word_data)
+        word_serialized = word_output_schema.dump(word_data)
         return word_serialized, 201
 
 
@@ -241,5 +241,5 @@ class SetWordsListSearch(Resource):
         '''Search words by id set'''
         data = SetModel.get_words_by_set_id(set_id)
         if data:
-            return word_schema.dump(data, many=True)
+            return word_output_schema.dump(data, many=True)
         return {'message': 'Words not found'}, 404

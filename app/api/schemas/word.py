@@ -4,7 +4,24 @@ from app.extensions import ma
 from app.api.models.word import WordModel, TagModel, SetModel
 
 
-class WordSchema(ma.SQLAlchemyAutoSchema):
+class TagSchema(ma.SQLAlchemyAutoSchema):
+    name = fields.String(required=True)
+
+    class Meta:
+        model = TagModel
+        load_instance = True
+
+    @validates("name")
+    def validate_name(self, name):
+        if name == '':
+            raise ValidationError(f"Field 'name' cannot be left blank", field_name="name")
+
+        query = TagModel.query.filter(TagModel.name == name)
+        if query.first():
+            raise ValidationError('this tag already exists', field_name="name") 
+
+
+class WordSchemaInput(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = WordModel
         load_instance = True
@@ -24,7 +41,6 @@ class WordSchema(ma.SQLAlchemyAutoSchema):
     def validate_tags(self, tags):
         if not tags:
             return tags
-
         tag_ids = [tag.id for tag in TagModel.query.all()]
 
         for tag in tags:
@@ -34,21 +50,13 @@ class WordSchema(ma.SQLAlchemyAutoSchema):
         return tags
 
 
-class TagSchema(ma.SQLAlchemyAutoSchema):
-    name = fields.String(required=True)
-
+class WordSchemaOutPut(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = TagModel
+        model = WordModel
         load_instance = True
+        include_relationships = True
 
-    @validates("name")
-    def validate_name(self, name):
-            if name == '':
-                raise ValidationError(f"Field 'name' cannot be left blank", field_name="name")
-
-            query = TagModel.query.filter(TagModel.name == name)
-            if query.first():
-                raise ValidationError('this tag already exists', field_name="name") 
+    tags = fields.Nested(TagSchema, many=True)
 
 
 class SetWordsSchema(ma.SQLAlchemyAutoSchema):

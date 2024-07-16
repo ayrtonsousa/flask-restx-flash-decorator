@@ -177,6 +177,8 @@ class UserUpdateRoles(Resource):
         data_user = UserModel.get_user_by_id(id_user)
         if data_user:
             data = users_ns.payload
+            # passes id to context to validate user data
+            user_roles_put_schema.context = {'user_id': id_user}
             errors = user_roles_put_schema.validate(data)
             if errors:
                 raise ValidationError(errors)

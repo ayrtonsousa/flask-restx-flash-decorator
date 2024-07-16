@@ -18,9 +18,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         ],
         required=True
     )
-
     name = fields.String(required=True)
-
     password = fields.String(
         validate=[
             validate.Length(min=3),
@@ -30,6 +28,16 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         ],
         required=True
     )
+    first_name = fields.Method("get_first_name")
+    roles = fields.Nested(RolesSchema, many=True)
+
+    def get_first_name(self, user):
+        return user.name.split(' ')[0]
+
+    class Meta:
+        model = UserModel
+        load_instance = True
+        include_relationships = True
 
     def transform_to_lower(self, data, field_name):
         if field_name in data:
@@ -51,16 +59,12 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
             if query.first():
                 raise ValidationError('this email already exists')
 
-    class Meta:
-        model = UserModel
-        load_instance = True
-        include_relationships = True
-
 
 class UserUpdateRolesSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("roles")
     def validate_roles(self, roles):
+        """ Check if there is a role """
         if not roles:
             return roles
 
@@ -74,9 +78,12 @@ class UserUpdateRolesSchema(ma.SQLAlchemyAutoSchema):
 
     @validates("is_admin")
     def validate_is_admin(self, is_admin):
-        users_admin = UserModel.query.filter(UserModel.is_admin == True).count()
-        if users_admin == 1 and is_admin == False:
-            raise ValidationError("The system needs at least one admin user")
+        """ Check if there is at least 1 admin user """
+        user_id = self.context.get('user_id')
+        users_admin = UserModel.query.filter(UserModel.is_admin == True, id != user_id)
+        if users_admin.count() == 1:
+            if is_admin == False and user_id == users_admin.first().id:
+                raise ValidationError("The system needs at least one admin user")
         
         return is_admin
 

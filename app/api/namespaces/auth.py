@@ -27,7 +27,7 @@ class Login(Resource):
                 access_token = create_access_token(
                     identity=user.id,
                     additional_claims={
-                        "name": user.name,
+                        "name": user.name.split(' ')[0],
                         "is_admin": user.is_admin,
                         "roles": [role.name for role in user.roles]
                     },
@@ -48,7 +48,7 @@ class Refresh(Resource):
             access_token = create_access_token(
                 identity=user.id,
                 additional_claims={
-                    "name": user.name,
+                    "name": user.name.split(' ')[0],
                     "is_admin": user.is_admin,
                     "roles": [role.name for role in user.roles]
                 },
