@@ -9,23 +9,29 @@ app = create_app()
 
 def load_initial_data():
     with app.app_context():
-        # apps
-        app1 = AppRoleModel(name='words')
-        app2 = AppRoleModel(name='set_words')
-        
-        apps_role = [app1, app2]
-        for app_role in apps_role:
+        # create apps
+        apps_to_create = [
+            AppRoleModel(name='words'),
+            AppRoleModel(name='set_words')
+        ]
+        for app_role in apps_to_create:
             try:
                 db.session.add(app_role)
                 db.session.commit()
             except exc.IntegrityError as e:
                 db.session.rollback()
-                app_role = AppRoleModel.query.filter_by(name=app_role.name).first()
 
-        # roles
+        # Roles
+
+        # Words
+        app1 = AppRoleModel.query.filter_by(name='words').first()
+
         role1_app1 = RoleModel(name='create_word', app_id=app1.id)
         role2_app1 = RoleModel(name='delete_word', app_id=app1.id)
         role3_app1 = RoleModel(name='update_word', app_id=app1.id)
+
+        # Sets
+        app2 = AppRoleModel.query.filter_by(name='set_words').first()
 
         role1_app2 = RoleModel(name='create_set_words', app_id=app2.id)
         role2_app2 = RoleModel(name='delete_set_words', app_id=app2.id)

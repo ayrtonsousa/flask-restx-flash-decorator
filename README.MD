@@ -5,7 +5,7 @@ decorar conforme a repetição.
 
 ## Features
 - Cadastro de palavras e suas traduções, tags e grupo de palavras
-- Cadastro de usuários
+- Cadastro e autenticação de usuários
 - Registro de acertos e erros de tradução
 - Endpoints para acompanhar resumo dos resultados, como total de acertas, erros,
 palavras com mais erros, taxa de acerto nos últimos 90 dias anteriores, etc .

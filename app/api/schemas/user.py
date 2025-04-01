@@ -21,10 +21,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     name = fields.String(required=True)
     password = fields.String(
         validate=[
-            validate.Length(min=3),
+            validate.Length(min=3, max=10),
             validate.Regexp(
-                r'^[a-zA-Z0-9_]+$',
-                error="password must only contain letters, numbers and underscores."),
+                r'^[a-zA-Z0-9!@#$%^&*()]+$',
+                error="password contains unsupported characters. Use only letters, numbers, and common special symbols."),
         ],
         required=True
     )
@@ -101,10 +101,10 @@ class UserUpdatePasswordSchema(Schema):
 
     new_password = fields.String(
         validate=[
-            validate.Length(min=3),
+            validate.Length(min=3, max=10),
             validate.Regexp(
-                r'^[a-zA-Z0-9_]+$',
-                error="new_password must only contain letters, numbers and underscores."),
+                r'^[a-zA-Z0-9!@#$%^&*()]+$',
+                error="new_password contains unsupported characters. Use only letters, numbers, and common special symbols."),
         ],
         error_messages={"required": "Field 'new_password' is required."},
     )
